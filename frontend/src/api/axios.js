@@ -3,6 +3,7 @@ import axios from "axios";
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 });
+// you can remove localhost
 
 // attach token from localStorage on every request
 api.interceptors.request.use((config) => {
