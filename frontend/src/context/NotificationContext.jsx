@@ -11,6 +11,9 @@ import api from "../api/axios.js";
 
 const NotificationContext = createContext();
 
+const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL ;
+
 export const NotificationProvider = ({ children }) => {
   const { user } = useAuth();
 
@@ -31,7 +34,6 @@ export const NotificationProvider = ({ children }) => {
 
       setNotifications(data);
 
-      // Calculate unread count
       const unread = data.filter(
         (notification) => !notification.isRead
       ).length;
@@ -96,7 +98,7 @@ export const NotificationProvider = ({ children }) => {
   };
 
   // =====================================================
-  // MARK ALL NOTIFICATIONS AS READ
+  // MARK ALL AS READ
   // =====================================================
   const markAllAsRead = async () => {
     try {
@@ -151,7 +153,7 @@ export const NotificationProvider = ({ children }) => {
   };
 
   // =====================================================
-  // DELETE ALL NOTIFICATIONS
+  // DELETE ALL
   // =====================================================
   const deleteAllNotifications = async () => {
     try {
@@ -181,31 +183,93 @@ export const NotificationProvider = ({ children }) => {
   }, [user?._id]);
 
   // =====================================================
-  // SOCKET.IO
+  // REAL-TIME SOCKET.IO
   // =====================================================
   useEffect(() => {
     if (!user?._id) return;
 
-    const socket = io("http://localhost:5000", {
+    const socket = io(SOCKET_URL, {
       withCredentials: true,
     });
 
-    socket.emit("join", {
-      userId: user._id,
-      role: user.role,
+    console.log(
+      "Connecting socket for user:",
+      user._id
+    );
+
+    socket.on("connect", () => {
+      console.log(
+        "Socket connected:",
+        socket.id
+      );
+
+      // IMPORTANT:
+      // Backend expects userId directly
+      socket.emit("join", user._id);
+
+      // Join staff/admin rooms if applicable
+      if (user.role === "staff") {
+        socket.emit("join_staff");
+      }
+
+      if (user.role === "admin") {
+        socket.emit("join_admin");
+      }
     });
 
-    // -------------------------------------------------
+    // ===================================================
     // CUSTOMER NOTIFICATION
-    // -------------------------------------------------
-    socket.on("new_notification", (notification) => {
+    // ===================================================
+    socket.on(
+      "new_notification",
+      (notification) => {
+        console.log(
+          "🔔 New notification:",
+          notification
+        );
+
+        setNotifications((prev) => {
+          // Prevent duplicate notification
+          const exists = prev.some(
+            (item) =>
+              item._id === notification._id
+          );
+
+          if (exists) {
+            return prev;
+          }
+
+          return [
+            notification,
+            ...prev,
+          ];
+        });
+
+        setUnreadCount((prev) => prev + 1);
+      }
+    );
+
+    // ===================================================
+    // STAFF / ADMIN NEW ORDER
+    // ===================================================
+    socket.on("new_order", (notification) => {
       console.log(
-        "New notification:",
+        "🔔 New order notification:",
         notification
       );
 
+      // Convert staff/admin order notification
+      // into the same notification format.
       setNotifications((prev) => [
-        notification,
+        {
+          _id: `socket-${Date.now()}`,
+          title: notification.title,
+          message: notification.message,
+          type: "new_order",
+          isRead: false,
+          createdAt: new Date().toISOString(),
+          order: notification.orderId,
+        },
         ...prev,
       ]);
 
@@ -213,6 +277,10 @@ export const NotificationProvider = ({ children }) => {
     });
 
     return () => {
+      console.log(
+        "Disconnecting socket..."
+      );
+
       socket.disconnect();
     };
   }, [user?._id, user?.role]);

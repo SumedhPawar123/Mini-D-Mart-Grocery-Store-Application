@@ -35,9 +35,8 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-6 text-sm font-medium">
           <Link
             to="/"
-            className={`transition hover:opacity-80 ${
-              isActive("/") ? "border-b-2 border-white pb-0.5 font-bold" : ""
-            }`}
+            className={`transition hover:opacity-80 ${isActive("/") ? "border-b-2 border-white pb-0.5 font-bold" : ""
+              }`}
           >
             Products
           </Link>
@@ -46,17 +45,15 @@ const Navbar = () => {
             <>
               <Link
                 to="/orders"
-                className={`transition hover:opacity-80 ${
-                  isActive("/orders") ? "border-b-2 border-white pb-0.5 font-bold" : ""
-                }`}
+                className={`transition hover:opacity-80 ${isActive("/orders") ? "border-b-2 border-white pb-0.5 font-bold" : ""
+                  }`}
               >
                 My Orders
               </Link>
               <Link
                 to="/returns"
-                className={`transition hover:opacity-80 ${
-                  isActive("/returns") ? "border-b-2 border-white pb-0.5 font-bold" : ""
-                }`}
+                className={`transition hover:opacity-80 ${isActive("/returns") ? "border-b-2 border-white pb-0.5 font-bold" : ""
+                  }`}
               >
                 Returns
               </Link>
@@ -66,9 +63,8 @@ const Navbar = () => {
           {(user?.role === "staff" || user?.role === "admin") && (
             <Link
               to="/staff"
-              className={`transition hover:opacity-80 ${
-                isActive("/staff") ? "border-b-2 border-white pb-0.5 font-bold" : ""
-              }`}
+              className={`transition hover:opacity-80 ${isActive("/staff") ? "border-b-2 border-white pb-0.5 font-bold" : ""
+                }`}
             >
               Staff Dashboard
             </Link>
@@ -77,9 +73,8 @@ const Navbar = () => {
           {user?.role === "admin" && (
             <Link
               to="/admin"
-              className={`transition hover:opacity-80 ${
-                isActive("/admin") ? "border-b-2 border-white pb-0.5 font-bold" : ""
-              }`}
+              className={`transition hover:opacity-80 ${isActive("/admin") ? "border-b-2 border-white pb-0.5 font-bold" : ""
+                }`}
             >
               Admin
             </Link>
@@ -88,6 +83,12 @@ const Navbar = () => {
 
         {/* Right Action Bar */}
         <div className="flex items-center gap-4">
+          {/* Notification */}
+          {/* Notification Bell */}
+          {user && (
+            <NotificationBell />
+          )}
+
           {/* Cart Icon Button */}
           {(!user || user?.role === "customer") && (
             <Link
@@ -248,4 +249,8 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
+
+
 

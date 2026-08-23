@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../api/axios.js";
@@ -15,12 +13,61 @@ const Home = () => {
   const [viewMode, setViewMode] = useState("grid");
   const [loading, setLoading] = useState(true);
 
+  const [carouselIndex, setCarouselIndex] = useState(0);
+
+  const carouselCards = [
+    {
+      id: 1,
+      badge: "Fresh & Healthy",
+      title: "Fresh Groceries",
+      description: "Get fresh fruits, vegetables and daily essentials at great prices.",
+      button: "Shop Now",
+      bg: "from-emerald-500 to-green-700",
+      emoji: "🥦",
+    },
+    {
+      id: 2,
+      badge: "Special Offer",
+      title: "Save More on Every Order",
+      description: "Enjoy amazing deals on your favourite grocery products.",
+      button: "Explore Deals",
+      bg: "from-orange-500 to-red-600",
+      emoji: "🛒",
+    },
+    {
+      id: 3,
+      badge: "Daily Essentials",
+      title: "Everything You Need",
+      description: "Milk, snacks, beverages, household items and much more.",
+      button: "Browse Products",
+      bg: "from-blue-500 to-indigo-700",
+      emoji: "🥛",
+    },
+    {
+      id: 4,
+      badge: "Fast Delivery",
+      title: "Groceries at Your Door",
+      description: "Order online and get your essentials delivered quickly.",
+      button: "Order Now",
+      bg: "from-purple-500 to-fuchsia-700",
+      emoji: "🚚",
+    },
+  ];
+
   // Fetch Categories
   useEffect(() => {
     api
       .get("/categories")
       .then((res) => setCategories(res.data))
-      .catch(() => {});
+      .catch(() => { });
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCarouselIndex((prev) => (prev + 1) % carouselCards.length);
+    }, 3500);
+
+    return () => clearInterval(interval);
   }, []);
 
   // Fetch Products
@@ -35,7 +82,7 @@ const Home = () => {
     api
       .get("/products", { params })
       .then((res) => setProducts(res.data))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, [search, category]);
 
@@ -81,6 +128,140 @@ const Home = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+      {/* ================= CARD CAROUSEL ================= */}
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative overflow-hidden rounded-3xl shadow-lg"
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={carouselCards[carouselIndex].id}
+            initial={{ opacity: 0, x: 80 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -80 }}
+            transition={{
+              duration: 0.5,
+              ease: "easeInOut",
+            }}
+            className={`relative min-h-[230px] sm:min-h-[260px] bg-gradient-to-r ${carouselCards[carouselIndex].bg} text-white overflow-hidden`}
+          >
+            {/* Background Decorations */}
+            <div className="absolute -right-16 -top-16 w-56 h-56 bg-white/10 rounded-full" />
+
+            <div className="absolute right-20 -bottom-20 w-48 h-48 bg-white/10 rounded-full" />
+
+            {/* Main Content */}
+            <div className="relative z-10 h-full min-h-[230px] sm:min-h-[260px] flex items-center justify-between px-6 sm:px-10 py-8">
+
+              {/* Text */}
+              <div className="max-w-xl">
+                <motion.span
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="inline-block bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3"
+                >
+                  {carouselCards[carouselIndex].badge}
+                </motion.span>
+
+                <motion.h2
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-2xl sm:text-4xl font-extrabold leading-tight"
+                >
+                  {carouselCards[carouselIndex].title}
+                </motion.h2>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="mt-2 text-sm sm:text-base text-white/90 max-w-md"
+                >
+                  {carouselCards[carouselIndex].description}
+                </motion.p>
+
+                <motion.button
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setSearch("");
+                    setCategory("");
+                    window.scrollTo({
+                      top: 400,
+                      behavior: "smooth",
+                    });
+                  }}
+                  className="mt-5 bg-white text-gray-900 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition"
+                >
+                  {carouselCards[carouselIndex].button}
+                </motion.button>
+              </div>
+
+              {/* Emoji / Illustration */}
+              <motion.div
+                key={`emoji-${carouselIndex}`}
+                initial={{ opacity: 0, scale: 0.5, rotate: -15 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{
+                  duration: 0.6,
+                  type: "spring",
+                }}
+                className="hidden sm:flex w-40 h-40 lg:w-48 lg:h-48 bg-white/15 backdrop-blur-sm rounded-full items-center justify-center text-7xl lg:text-8xl shadow-inner"
+              >
+                {carouselCards[carouselIndex].emoji}
+              </motion.div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Previous Button */}
+        <button
+          onClick={() =>
+            setCarouselIndex(
+              (prev) =>
+                (prev - 1 + carouselCards.length) %
+                carouselCards.length
+            )
+          }
+          className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white flex items-center justify-center text-lg transition"
+        >
+          ‹
+        </button>
+
+        {/* Next Button */}
+        <button
+          onClick={() =>
+            setCarouselIndex(
+              (prev) => (prev + 1) % carouselCards.length
+            )
+          }
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md text-white flex items-center justify-center text-lg transition"
+        >
+          ›
+        </button>
+
+        {/* Dots */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          {carouselCards.map((card, index) => (
+            <button
+              key={card.id}
+              onClick={() => setCarouselIndex(index)}
+              className={`h-2 rounded-full transition-all duration-300 ${carouselIndex === index
+                  ? "w-7 bg-white"
+                  : "w-2 bg-white/50 hover:bg-white/80"
+                }`}
+            />
+          ))}
+        </div>
+      </motion.div>
 
       {/* ================= HERO ================= */}
       <motion.div
@@ -186,11 +367,10 @@ const Home = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setViewMode("grid")}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
-              viewMode === "grid"
-                ? "bg-brand text-white"
-                : "text-gray-500 hover:text-gray-900"
-            }`}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${viewMode === "grid"
+              ? "bg-brand text-white"
+              : "text-gray-500 hover:text-gray-900"
+              }`}
           >
             Grid
           </motion.button>
@@ -198,11 +378,10 @@ const Home = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setViewMode("list")}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
-              viewMode === "list"
-                ? "bg-brand text-white"
-                : "text-gray-500 hover:text-gray-900"
-            }`}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${viewMode === "list"
+              ? "bg-brand text-white"
+              : "text-gray-500 hover:text-gray-900"
+              }`}
           >
             List
           </motion.button>
@@ -225,11 +404,10 @@ const Home = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setCategory("")}
-          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-            category === ""
-              ? "bg-gray-900 text-white shadow-sm"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
+          className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${category === ""
+            ? "bg-gray-900 text-white shadow-sm"
+            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
         >
           All Items
         </motion.button>
@@ -240,11 +418,10 @@ const Home = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setCategory(c._id)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-              category === c._id
-                ? "bg-brand text-white shadow-sm"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+            className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${category === c._id
+              ? "bg-brand text-white shadow-sm"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
           >
             {c.name}
           </motion.button>

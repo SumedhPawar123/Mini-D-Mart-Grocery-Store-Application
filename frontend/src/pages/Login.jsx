@@ -184,7 +184,7 @@ const Login = () => {
         </p>
 
         {/* 1-Click Interactive Test Credentials */}
-        <div className="mt-8 pt-6 border-t border-gray-100">
+        {/* <div className="mt-8 pt-6 border-t border-gray-100">
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">
             Click to Auto-Fill Test Account
           </p>
@@ -211,7 +211,7 @@ const Login = () => {
               Admin
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

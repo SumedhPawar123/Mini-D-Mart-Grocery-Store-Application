@@ -8,8 +8,8 @@ import RoleRoute from "./components/RoleRoute.jsx";
 
 import Home from "./pages/Home.jsx";
 import ProductDetail from "./pages/ProductDetail.jsx";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
+// import Login from "./pages/Login.jsx";
+// import Register from "./pages/Register.jsx";
 import Cart from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import Orders from "./pages/Orders.jsx";
@@ -18,6 +18,8 @@ import Returns from "./pages/Returns.jsx";
 import StaffDashboard from "./pages/StaffDashboard.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import Footer from "./components/Footer.jsx";
+import Auth from "./pages/Auth.jsx";
 
 function App() {
   return (
@@ -28,8 +30,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products/:id" element={<ProductDetail />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Auth />} />
+        <Route path="/register" element={<Auth />} />
 
         <Route path="/cart" element={<RoleRoute roles={["customer"]}><Cart /></RoleRoute>} />
         <Route path="/checkout" element={<RoleRoute roles={["customer"]}><Checkout /></RoleRoute>} />
@@ -42,6 +44,8 @@ function App() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      <Footer/>
     </div>
   );
 }
