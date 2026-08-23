@@ -45,10 +45,17 @@ const AdminDashboard = () => {
   const [newProduct, setNewProduct] = useState(emptyProduct);
   const [newImagePreview, setNewImagePreview] = useState(null);
 
-  const [newCategory, setNewCategory] = useState("");
+  const [newCategory, setNewCategory] = useState({
+    name: "",
+    description: "",
+  });
+
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const [editingProduct, setEditingProduct] = useState(null);
   const [editImagePreview, setEditImagePreview] = useState(null);
+
+
 
   const [deleteModal, setDeleteModal] = useState({
     open: false,
@@ -177,7 +184,7 @@ const AdminDashboard = () => {
 
       toast.error(
         err.response?.data?.message ||
-          "Could not add product"
+        "Could not add product"
       );
     }
   };
@@ -278,7 +285,7 @@ const AdminDashboard = () => {
 
       toast.error(
         err.response?.data?.message ||
-          "Could not update product"
+        "Could not update product"
       );
     }
   };
@@ -307,7 +314,7 @@ const AdminDashboard = () => {
     } catch (err) {
       toast.error(
         err.response?.data?.message ||
-          "Could not delete product"
+        "Could not delete product"
       );
     }
   };
@@ -319,22 +326,33 @@ const AdminDashboard = () => {
   const addCategory = async (e) => {
     e.preventDefault();
 
-    if (!newCategory.trim()) return;
+    if (!newCategory.name.trim()) {
+      toast.error("Category name is required");
+      return;
+    }
 
     try {
       await api.post("/categories", {
-        name: newCategory,
+        name: newCategory.name.trim(),
+        description: newCategory.description.trim(),
       });
 
-      toast.success("Category added");
+      toast.success("Category added successfully");
 
-      setNewCategory("");
+      setNewCategory({
+        name: "",
+        description: "",
+      });
+
+      setShowCategoryModal(false);
 
       loadAll();
     } catch (err) {
+      console.error(err);
+
       toast.error(
         err.response?.data?.message ||
-          "Could not add category"
+        "Could not add category"
       );
     }
   };
@@ -355,7 +373,7 @@ const AdminDashboard = () => {
     } catch (err) {
       toast.error(
         err.response?.data?.message ||
-          "Could not update role"
+        "Could not update role"
       );
     }
   };
@@ -434,11 +452,10 @@ const AdminDashboard = () => {
               setTab(t);
               setSearch("");
             }}
-            className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all ${
-              tab === t
+            className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all ${tab === t
                 ? "bg-brand text-white shadow-sm"
                 : "bg-gray-50 text-gray-600 hover:bg-gray-100"
-            }`}
+              }`}
           >
             {t}
           </button>
@@ -928,48 +945,216 @@ const AdminDashboard = () => {
           CATEGORIES
       ===================================================== */}
 
+      {/* =====================================================
+    CATEGORIES
+===================================================== */}
+
       {tab === "Categories" && (
         <div className="space-y-6">
 
-          <form
-            onSubmit={addCategory}
-            className="flex gap-3"
-          >
-            <input
-              placeholder="Enter category name..."
-              value={newCategory}
-              onChange={(e) =>
-                setNewCategory(e.target.value)
-              }
-              className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm flex-1 focus:outline-none focus:ring-2 focus:ring-brand/50"
-            />
+          {/* HEADER */}
+
+          <div className="flex items-center justify-between">
+
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">
+                Categories
+              </h2>
+
+              <p className="text-sm text-gray-500">
+                Manage your grocery categories.
+              </p>
+            </div>
 
             <button
-              type="submit"
+              type="button"
+              onClick={() => setShowCategoryModal(true)}
               className="bg-brand text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:opacity-90 active:scale-95 transition"
             >
-              Add Category
+              + Add Category
             </button>
-          </form>
+
+          </div>
+
+          {/* CATEGORY LIST */}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
 
-            {filteredCategories.map((c) => (
-              <div
-                key={c._id}
-                className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between"
-              >
-                <span className="font-semibold text-gray-800">
-                  {c.name}
-                </span>
+            {filteredCategories.length === 0 ? (
 
-                <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-md font-medium">
-                  ID: #{c._id.slice(-4)}
-                </span>
+              <div className="col-span-full bg-white p-8 rounded-xl border border-gray-100 text-center">
+
+                <p className="text-sm text-gray-400">
+                  No categories found.
+                </p>
+
               </div>
-            ))}
+
+            ) : (
+
+              filteredCategories.map((c) => (
+
+                <div
+                  key={c._id}
+                  className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm"
+                >
+
+                  <div className="flex items-center justify-between gap-3">
+
+                    <span className="font-semibold text-gray-800">
+                      {c.name}
+                    </span>
+
+                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-md font-medium">
+                      ID: #{c._id.slice(-4)}
+                    </span>
+
+                  </div>
+
+                  {c.description && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      {c.description}
+                    </p>
+                  )}
+
+                </div>
+
+              ))
+
+            )}
 
           </div>
+
+          {/* =====================================================
+        ADD CATEGORY MODAL
+    ===================================================== */}
+
+          {showCategoryModal && (
+
+            <div
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+              onClick={() => setShowCategoryModal(false)}
+            >
+
+              <div
+                className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+
+                {/* MODAL HEADER */}
+
+                <div className="flex items-center justify-between mb-5">
+
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      Add Category
+                    </h3>
+
+                    <p className="text-xs text-gray-500 mt-1">
+                      Create a new grocery category.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowCategoryModal(false)}
+                    className="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition"
+                  >
+                    ×
+                  </button>
+
+                </div>
+
+                {/* FORM */}
+
+                <form
+                  onSubmit={addCategory}
+                  className="space-y-4"
+                >
+
+                  {/* CATEGORY NAME */}
+
+                  <div>
+
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                      Category Name
+                    </label>
+
+                    <input
+                      type="text"
+                      placeholder="e.g. Fruits"
+                      value={newCategory.name}
+                      onChange={(e) =>
+                        setNewCategory((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
+                      autoFocus
+                      required
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand/50"
+                    />
+
+                  </div>
+
+                  {/* DESCRIPTION */}
+
+                  <div>
+
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                      Description
+                    </label>
+
+                    <textarea
+                      placeholder="e.g. Fresh and seasonal fruits"
+                      rows={4}
+                      value={newCategory.description}
+                      onChange={(e) =>
+                        setNewCategory((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand/50"
+                    />
+
+                  </div>
+
+                  {/* BUTTONS */}
+
+                  <div className="flex justify-end gap-3 pt-2">
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowCategoryModal(false);
+
+                        setNewCategory({
+                          name: "",
+                          description: "",
+                        });
+                      }}
+                      className="px-4 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 text-sm font-semibold text-white bg-brand rounded-xl hover:opacity-90 transition active:scale-95"
+                    >
+                      Add Category
+                    </button>
+
+                  </div>
+
+                </form>
+
+              </div>
+
+            </div>
+
+          )}
 
         </div>
       )}
