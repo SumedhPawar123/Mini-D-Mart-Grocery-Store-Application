@@ -2,15 +2,51 @@ import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
-    name: { type: String },
-    description: { type: String },
-    price: { type: Number },
-    image: { type: String },
-    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
-    stock: { type: Number, default: 0 },
-    unit: { type: String, default: "pcs" }, // e.g. kg, ltr, pcs
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      default: "",
+    },
+
+    price: {
+      type: Number,
+      required: true,
+    },
+
+    image: {
+      type: String,
+      default: "",
+    },
+
+    imagePublicId: {
+      type: String,
+      default: "",
+    },
+
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+
+    stock: {
+      type: Number,
+      default: 0,
+    },
+
+    unit: {
+      type: String,
+      default: "pcs",
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export default mongoose.model("Product", productSchema);
