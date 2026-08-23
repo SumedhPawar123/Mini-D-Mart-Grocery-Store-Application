@@ -1,68 +1,3 @@
-// import { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
-// import api from "../api/axios.js";
-// import Loader from "../components/Loader.jsx";
-// import { useAuth } from "../context/AuthContext.jsx";
-// import { useCart } from "../context/CartContext.jsx";
-
-// const ProductDetail = () => {
-//   const { id } = useParams();
-//   const { user } = useAuth();
-//   const { addToCart } = useCart();
-//   const [product, setProduct] = useState(null);
-//   const [qty, setQty] = useState(1);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     api.get(`/products/${id}`).then((res) => setProduct(res.data)).finally(() => setLoading(false));
-//   }, [id]);
-
-//   if (loading) return <Loader />;
-//   if (!product) return <p className="text-center py-16 text-gray-400">Product not found.</p>;
-
-//   return (
-//     <div className="max-w-4xl mx-auto px-4 py-8 grid sm:grid-cols-2 gap-8">
-//       <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center text-7xl">
-//         {product.image ? (
-//           <img src={product.image} alt={product.name} className="h-full object-contain" />
-//         ) : (
-//           "🛍️"
-//         )}
-//       </div>
-//       <div>
-//         <h1 className="text-2xl font-bold">{product.name}</h1>
-//         <p className="text-gray-500 text-sm mb-2">{product.category?.name}</p>
-//         <p className="text-gray-600 mb-4">{product.description}</p>
-//         <p className="text-2xl font-bold text-brand mb-2">₹{product.price} <span className="text-sm text-gray-400 font-normal">/{product.unit}</span></p>
-//         <p className={`text-sm mb-4 ${product.stock > 0 ? "text-green-600" : "text-red-500"}`}>
-//           {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
-//         </p>
-
-//         {user?.role === "customer" && product.stock > 0 && (
-//           <div className="flex items-center gap-3">
-//             <input
-//               type="number"
-//               min="1"
-//               max={product.stock}
-//               value={qty}
-//               onChange={(e) => setQty(Number(e.target.value))}
-//               className="w-20 border rounded px-2 py-1"
-//             />
-//             <button
-//               onClick={() => addToCart(product._id, qty)}
-//               className="bg-brand text-white px-4 py-2 rounded hover:bg-brand-dark"
-//             >
-//               Add to Cart
-//             </button>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ProductDetail;
-
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -71,6 +6,7 @@ import api from "../api/axios.js";
 import Loader from "../components/Loader.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
+import { getImageUrl } from "../utils/imageUrl.js";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -117,8 +53,8 @@ const ProductDetail = () => {
   const productImages = product.images?.length
     ? product.images
     : product.image
-    ? [product.image]
-    : ["🛍️"];
+      ? [product.image]
+      : ["🛍️"];
 
   const handleAddToCart = async () => {
     setAdding(true);
@@ -157,9 +93,9 @@ const ProductDetail = () => {
         <div className="space-y-4">
           <div className="relative h-80 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center overflow-hidden group shadow-sm">
             {productImages[selectedImage]?.startsWith("http") ||
-            productImages[selectedImage]?.startsWith("/") ? (
+              productImages[selectedImage]?.startsWith("/") ? (
               <img
-                src={productImages[selectedImage]}
+                src={getImageUrl(productImages[selectedImage])}
                 alt={product.name}
                 className="h-full w-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
               />
@@ -174,11 +110,10 @@ const ProductDetail = () => {
                 setIsWishlisted(!isWishlisted);
                 toast.info(isWishlisted ? "Removed from Wishlist" : "Added to Wishlist");
               }}
-              className={`absolute top-4 right-4 p-2.5 rounded-full shadow-md backdrop-blur-md transition ${
-                isWishlisted
+              className={`absolute top-4 right-4 p-2.5 rounded-full shadow-md backdrop-blur-md transition ${isWishlisted
                   ? "bg-rose-50 text-rose-600 border border-rose-200"
                   : "bg-white/80 text-gray-400 hover:text-rose-500"
-              }`}
+                }`}
             >
               ♥
             </button>
@@ -191,11 +126,10 @@ const ProductDetail = () => {
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
-                  className={`w-16 h-16 rounded-xl border-2 flex items-center justify-center bg-gray-50 overflow-hidden transition ${
-                    selectedImage === idx
+                  className={`w-16 h-16 rounded-xl border-2 flex items-center justify-center bg-gray-50 overflow-hidden transition ${selectedImage === idx
                       ? "border-brand ring-2 ring-brand/20"
                       : "border-gray-200 hover:border-gray-300"
-                  }`}
+                    }`}
                 >
                   {img.startsWith("http") ? (
                     <img src={img} alt="" className="w-full h-full object-cover" />
@@ -318,11 +252,10 @@ const ProductDetail = () => {
             <button
               key={t}
               onClick={() => setActiveTab(t)}
-              className={`text-sm font-semibold capitalize transition ${
-                activeTab === t
+              className={`text-sm font-semibold capitalize transition ${activeTab === t
                   ? "text-brand border-b-2 border-brand pb-3 -mb-3.5"
                   : "text-gray-400 hover:text-gray-600"
-              }`}
+                }`}
             >
               {t}
             </button>

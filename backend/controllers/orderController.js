@@ -1,6 +1,9 @@
 import Order from "../models/Order.js";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
+import Notification from "../models/Notification.js";
+import { getIO } from "../utils/socket.js";
+import User from "../models/User.js";
 
 // @desc Create order from cart (checkout)
 // @route POST /api/orders
@@ -41,6 +44,47 @@ export const createOrder = async (req, res) => {
     scheduledDate,
     deliveryAddress,
     status: "pending",
+  });
+
+  // Notification Sending
+
+  // =====================================================
+  // SEND CHECKOUT NOTIFICATIONS
+  // =====================================================
+
+  const io = getIO();
+
+  // -----------------------------------------------------
+  // CUSTOMER NOTIFICATION
+  // -----------------------------------------------------
+
+  const customerNotification = await Notification.create({
+    recipient: req.user._id,
+    title: "Order Placed Successfully",
+    message: `Your order #${order._id} has been placed successfully.`,
+    type: "order_created",
+    order: order._id,
+  });
+
+  io.to(`user_${req.user._id}`).emit(
+    "new_notification",
+    customerNotification
+  );
+
+  // -----------------------------------------------------
+  // STAFF + ADMIN REAL-TIME NOTIFICATION
+  // -----------------------------------------------------
+
+  io.to("staff").emit("new_order", {
+    title: "New Order Received",
+    message: `New order #${order._id} has been placed.`,
+    orderId: order._id,
+  });
+
+  io.to("admin").emit("new_order", {
+    title: "New Order Received",
+    message: `New order #${order._id} has been placed.`,
+    orderId: order._id,
   });
 
   // reduce stock
