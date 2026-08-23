@@ -36,6 +36,13 @@ app.use(cors({ origin: process.env.CLIENT_URL || "*" }));
 app.use(express.json());
 app.use(morgan("dev"));
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Mini D-Mart API is running",
+  });
+});
+
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
 app.use("/uploads", express.static("uploads"));
