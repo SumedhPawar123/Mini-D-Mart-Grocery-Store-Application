@@ -44,11 +44,17 @@ app.use(morgan("dev"));
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Mini D-Mart API is running",
+    message: "Mini D-Mart API is running - VERSION 2",
   });
 });
 
-app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: "ok",
+    version: "2",
+  });
+});
 
 app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
@@ -64,4 +70,9 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => {
+  console.log("=================================");
+  console.log("MINI DMART BACKEND VERSION 2");
+  console.log(`Server running on port ${PORT}`);
+  console.log("=================================");
+});
