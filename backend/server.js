@@ -32,7 +32,12 @@ const io = new Server(server, {
 
 initializeSocket(io);
 
-app.use(cors({ origin: process.env.CLIENT_URL || "*" }));
+const corsOptions = {
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan("dev"));
 
