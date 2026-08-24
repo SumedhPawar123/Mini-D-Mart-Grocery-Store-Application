@@ -127,20 +127,25 @@ const Navbar = () => {
                     <p className="text-xs font-bold text-gray-900 truncate">{user.name}</p>
                     <p className="text-[11px] text-gray-400 truncate">{user.email}</p>
                   </div>
-                  <Link
-                    to="/orders"
-                    onClick={() => setProfileDropdownOpen(false)}
-                    className="block px-4 py-2 text-xs font-medium hover:bg-gray-50 text-gray-700"
-                  >
-                    My Orders
-                  </Link>
-                  <Link
-                    to="/returns"
-                    onClick={() => setProfileDropdownOpen(false)}
-                    className="block px-4 py-2 text-xs font-medium hover:bg-gray-50 text-gray-700"
-                  >
-                    Returns & Exchanges
-                  </Link>
+                  {user?.role === "customer" && (
+                    <>
+                      <Link
+                        to="/orders"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="block px-4 py-2 text-xs font-medium hover:bg-gray-50 text-gray-700"
+                      >
+                        My Orders
+                      </Link>
+
+                      <Link
+                        to="/returns"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="block px-4 py-2 text-xs font-medium hover:bg-gray-50 text-gray-700"
+                      >
+                        Returns & Exchanges
+                      </Link>
+                    </>
+                  )}
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 border-t border-gray-100 mt-1"
