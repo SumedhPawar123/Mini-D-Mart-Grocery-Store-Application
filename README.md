@@ -62,8 +62,6 @@ Create a `.env` file in the server folder:
 ```env
 PORT=5000
 MONGO_URI=mongodb+srv://psumedh59_db_user:Sumedh4912@cluster0.38xedac.mongodb.net/mini-dmart?appName=Cluster0
-JWT_SECRET=mini-super-marketinhifhilgjilahyaglkslihsyark
-JWT_EXPIRES_IN=7d
 CLIENT_URL=https://mini-d-mart-grocery-store-applicati-seven.vercel.app/
 
 ```
