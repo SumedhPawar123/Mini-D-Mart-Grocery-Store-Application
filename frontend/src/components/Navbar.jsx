@@ -31,6 +31,8 @@ const Navbar = () => {
           <span>🛒</span> Mini D-Mart
         </Link>
 
+        <span>Mini Item</span>
+
         {/* Desktop Navigation Links */}
         <div className="hidden md:flex items-center gap-6 text-sm font-medium">
           <Link
